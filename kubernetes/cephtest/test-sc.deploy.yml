@@ -1,0 +1,23 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+    name: demo-sc
+spec:
+    replicas: 3
+    template:
+        metadata:
+            labels:
+                app: demo-sc 
+        spec:
+            containers:
+            - name: demo-sc 
+              image: mritd/demo 
+              ports:
+              - containerPort: 80
+              volumeMounts:
+                - mountPath: "/data"
+                  name: data 
+            volumes:
+              - name: data 
+                persistentVolumeClaim:
+                    claimName: test-sc-pvc
