@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-mobile-service
+spec:
+  ports:
+  - port: 20016
+  selector:
+    app: scm-mobile-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-mobile-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-mobile-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-mobile-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-mobile-deployment
+        tier: scm-mobile-deployment
+    spec:
+      containers:
+      - name: scm-mobile-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.mobile:$IMAGE_ID
+        ports:
+        - containerPort: 20016
+      imagePullSecrets:
+        - name: aliyun-secret

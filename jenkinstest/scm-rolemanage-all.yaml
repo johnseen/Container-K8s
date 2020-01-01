@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-rolemanage-service
+spec:
+  ports:
+  - port: 20011
+  selector:
+    app: scm-rolemanage-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-rolemanage-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-rolemanage-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-rolemanage-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-rolemanage-deployment
+        tier: scm-rolemanage-deployment
+    spec:
+      containers:
+      - name: scm-rolemanage-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.rolemanage:$IMAGE_ID
+        ports:
+        - containerPort: 20011
+      imagePullSecrets:
+        - name: aliyun-secret

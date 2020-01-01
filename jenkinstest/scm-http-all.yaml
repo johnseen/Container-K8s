@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-http-service
+spec:
+  ports:
+  - port: 5001
+  selector:
+    app: scm-http-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-http-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-http-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-http-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-http-deployment
+        tier: scm-http-deployment
+    spec:
+      containers:
+      - name: scm-http-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/httpproxy:$IMAGE_ID
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5001
+      imagePullSecrets:
+        - name: aliyun-secret

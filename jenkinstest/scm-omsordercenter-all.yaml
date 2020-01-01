@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-omsordercenter-service
+spec:
+  ports:
+  - port: 20006
+  selector:
+    app: scm-omsordercenter-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-omsordercenter-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-omsordercenter-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-omsordercenter-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-omsordercenter-deployment
+        tier: scm-omsordercenter-deployment
+    spec:
+      containers:
+      - name: scm-omsordercenter-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/omsordercenter:$IMAGE_ID
+        ports:
+        - containerPort: 20006
+      imagePullSecrets:
+        - name: aliyun-secret

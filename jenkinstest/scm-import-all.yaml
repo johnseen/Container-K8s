@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-import-service
+spec:
+  ports:
+  - port: 20009
+  selector:
+    app: scm-import-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-import-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-import-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-import-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-import-deployment
+        tier: scm-import-deployment
+    spec:
+      containers:
+      - name: scm-import-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.importexport:$IMAGE_ID
+        ports:
+        - containerPort: 20009
+      imagePullSecrets:
+        - name: aliyun-secret

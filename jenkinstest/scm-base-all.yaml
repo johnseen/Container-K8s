@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-base-service
+spec:
+  ports:
+  - port: 20001
+    targetPort: 20001
+  selector:
+    app: scm-base-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-base-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-base-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-base-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-base-deployment
+        tier: scm-base-deployment
+    spec:
+      containers:
+      - name: scm-base-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.base:$IMAGE_ID
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 20001
+      imagePullSecrets:
+        - name: aliyun-secret

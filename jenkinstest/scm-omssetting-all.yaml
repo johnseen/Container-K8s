@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-omssetting-service
+spec:
+  ports:
+  - port: 20012
+  selector:
+    app: scm-omssetting-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-omssetting-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-omssetting-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-omssetting-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-omssetting-deployment
+        tier: scm-omssetting-deployment
+    spec:
+      containers:
+      - name: scm-omssetting-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.omssetting:$IMAGE_ID
+        ports:
+        - containerPort: 20012
+      imagePullSecrets:
+        - name: aliyun-secret

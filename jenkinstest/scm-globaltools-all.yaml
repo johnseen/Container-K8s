@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-globaltools-service
+spec:
+  ports:
+  - port: 20004
+  selector:
+    app: scm-globaltools-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-globaltools-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-globaltools-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-globaltools-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-globaltools-deployment
+        tier: scm-globaltools-deployment
+    spec:
+      containers:
+      - name: scm-globaltools-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.globaltools:$IMAGE_ID
+        ports:
+        - containerPort: 20004
+      imagePullSecrets:
+        - name: aliyun-secret

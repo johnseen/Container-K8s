@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-configration-service
+spec:
+  ports:
+  - port: 20003
+  selector:
+    app: scm-configration-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-configration-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-configration-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-configration-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-configration-deployment
+        tier: scm-configration-deployment
+    spec:
+      containers:
+      - name: scm-configration-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.configration:$IMAGE_ID
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 20003
+      imagePullSecrets:
+        - name: aliyun-secret

@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-logservice-service
+spec:
+  ports:
+  - port: 20014
+  selector:
+    app: scm-logservice-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-logservice-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-logservice-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-logservice-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-logservice-deployment
+        tier: scm-logservice-deployment
+    spec:
+      containers:
+      - name: scm-logservice-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.logservice:$IMAGE_ID
+        ports:
+        - containerPort: 20014
+      imagePullSecrets:
+        - name: aliyun-secret

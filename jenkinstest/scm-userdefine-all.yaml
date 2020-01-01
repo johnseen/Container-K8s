@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scm-userdefine-service
+spec:
+  ports:
+  - port: 20008
+  selector:
+    app: scm-userdefine-deployment
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: scm-userdefine-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: scm-userdefine-deployment
+    matchExpressions:
+      - {key: tier, operator: In, values: [scm-userdefine-deployment]}
+  template:
+    metadata:
+      labels:
+        app: scm-userdefine-deployment
+        tier: scm-userdefine-deployment
+    spec:
+      containers:
+      - name: scm-userdefine-deployment
+        image: registry.cn-hangzhou.aliyuncs.com/scm-oms/scm.oms.userdefine:$IMAGE_ID
+        ports:
+        - containerPort: 20008
+      imagePullSecrets:
+        - name: aliyun-secret
